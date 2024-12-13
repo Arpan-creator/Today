@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { Movie } = require("./models/movie.js");
+require('dotenv').config();
 
 const app = express();
 const PORT = 5001;
@@ -10,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 
-mongoose.connect("mongodb://localhost:27017/moviesdb", {
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
