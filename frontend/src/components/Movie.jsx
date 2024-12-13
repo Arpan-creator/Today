@@ -6,7 +6,9 @@ const AppContainer = styled.div`
   display: flex;
   height: 100vh;
   width: 100%;
-  gap: 20px; /* Add gap between left and right panels */
+  gap: 200px;
+  background-image: url('https://example.com/background.jpg');
+  
 `;
 
 const LeftPanel = styled.div`
@@ -68,12 +70,27 @@ const MovieCard = styled.div`
   width: 100%;
   border-radius: 5px;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 
 const SearchContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
+`;
+
+const Rating = styled.div`
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  cursor: pointer;
+
+  span {
+    font-size: 20px;
+    color: gold;
+  }
 `;
 
 function Movie() {
@@ -83,9 +100,10 @@ function Movie() {
     description: "",
     releaseYear: "",
     watch: false,
+    rating: 0,
   });
-  const [filter, setFilter] = useState("all"); // Filter state
-  const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -103,7 +121,7 @@ function Movie() {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/movies", {
+      const response = await fetch("http://localhost:5001/movies", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +132,7 @@ function Movie() {
       if (response.ok) {
         const data = await response.json();
         setMovies((prev) => [...prev, data]);
-        setForm({ title: "", description: "", releaseYear: "", watch: false });
+        setForm({ title: "", description: "", releaseYear: "", watch: false, rating: 0 });
       }
     } catch (error) {
       console.error("Error submitting the movie:", error);
@@ -131,9 +149,9 @@ function Movie() {
 
   const fetchMovies = async () => {
     try {
-      let url = "http://localhost:5000/movies";
+      let url = "http://localhost:5001/movies";
       if (searchQuery) {
-        url = `http://localhost:5000/movie/search?q=${searchQuery}`;
+        url = `http://localhost:5001/movie/search?q=${searchQuery}`;
       }
       const response = await fetch(url);
       const data = await response.json();
@@ -143,20 +161,56 @@ function Movie() {
     }
   };
 
-  const filteredMovies = movies.filter((movie) => {
-    if (filter === "all") return true;
-    return filter === "watched" ? movie.watch : !movie.watch;
-  });
+  const toggleWatchStatus = async (index) => {
+    const updatedMovies = [...movies];
+    updatedMovies[index].watch = !updatedMovies[index].watch;
+
+    try {
+      await fetch(`http://localhost:5001/movies/${updatedMovies[index]._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ watch: updatedMovies[index].watch }),
+      });
+
+      setMovies(updatedMovies);
+    } catch (error) {
+      console.error("Error updating watch status:", error);
+    }
+  };
+
+  const setRating = async (index, rating) => {
+    const updatedMovies = [...movies];
+    updatedMovies[index].rating = rating;
+
+    try {
+      await fetch(`http://localhost:5001/movies/${updatedMovies[index]._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating }),
+      });
+
+      setMovies(updatedMovies);
+    } catch (error) {
+      console.error("Error updating rating:", error);
+    }
+  };
 
   useEffect(() => {
     fetchMovies();
   }, [searchQuery]);
 
+  const filteredMovies = movies.filter((movie) => {
+    if (filter === "all") return true;
+    return filter === "watched" ? movie.watch : !movie.watch;
+  });
+
   return (
     <AppContainer>
-      {/* Left Panel */}
       <LeftPanel>
-        {/* Form Container */}
         <FormContainer>
           <Header>IMDB</Header>
           <p>Welcome to IMDB</p>
@@ -196,7 +250,6 @@ function Movie() {
           </Form>
         </FormContainer>
 
-        {/* Filter/Search Container */}
         <FilterContainer>
           <SearchContainer>
             <input
@@ -219,7 +272,6 @@ function Movie() {
         </FilterContainer>
       </LeftPanel>
 
-      {/* Right Panel (Movie List) */}
       <RightPanel>
         <MovieList>
           <h2>Movie List</h2>
@@ -228,7 +280,21 @@ function Movie() {
               <strong>Title:</strong> {movie.title} <br />
               <strong>Description:</strong> {movie.description} <br />
               <strong>Release Year:</strong> {movie.releaseYear} <br />
-              <strong>Watched:</strong> {movie.watch ? "Yes" : "No"}
+              <strong>Watched:</strong>
+              <Button onClick={() => toggleWatchStatus(index)}>
+                {movie.watch ? "Yes" : "No"}
+              </Button>
+              <Rating>
+                <strong>Rating:</strong>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    onClick={() => setRating(index, star)}
+                  >
+                    {star <= movie.rating ? "★" : "☆"}
+                  </span>
+                ))}
+              </Rating>
             </MovieCard>
           ))}
         </MovieList>
