@@ -212,8 +212,8 @@ function Movie() {
     <AppContainer>
       <LeftPanel>
         <FormContainer>
-          <Header>IMDB</Header>
-          <p>Welcome to IMDB</p>
+          <Header>Movie WatchList</Header>
+          <p>Welcome to your WatchList</p>
           <Form onSubmit={handleSubmit}>
             <input
               type="text"
