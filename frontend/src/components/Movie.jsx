@@ -7,7 +7,9 @@ const AppContainer = styled.div`
   height: 100vh;
   width: 100%;
   gap: 200px;
-  background-image: url('https://example.com/background.jpg');
+  // background-image: url('movie.jpg');
+  background-Color:#e6e6ff;
+  
   
 `;
 
@@ -16,6 +18,7 @@ const LeftPanel = styled.div`
   padding-right: 20px;
   display: flex;
   flex-direction: column;
+  margin-left:50px;
 `;
 
 const FormContainer = styled.div`
@@ -36,7 +39,7 @@ const RightPanel = styled.div`
 `;
 
 const Header = styled.h1`
-  color: greenyellow;
+  color: rgb(255, 77, 77);
 `;
 
 const Form = styled.form`
@@ -46,39 +49,44 @@ const Form = styled.form`
   padding: 20px;
   border: 1px solid black;
   border-radius: 5px;
+  box-shadow: 5px 5px lightblue; 
 `;
 
 const Button = styled.button`
-  background-color: greenyellow;
+  background-color: #008CBA;
   border: none;
   padding: 10px;
   cursor: pointer;
   border-radius: 5px;
   &:hover {
-    background-color: #9acd32;
+    background-color:rgb(50, 71, 205);
   }
 `;
 
 const MovieList = styled.div`
-  margin-top: 30px;
+  margin-top: 30px ;
+  
 `;
 
 const MovieCard = styled.div`
   border: 1px solid #ccc;
   padding: 15px;
-  margin: 10px 0;
-  width: 100%;
+  margin-right:20px;
+  // width: 100%;
   border-radius: 5px;
+  box-shadow: 5px 5px lightblue; ;
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  
 `;
 
 const SearchContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
+  
 `;
 
 const Rating = styled.div`
